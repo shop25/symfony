@@ -31,7 +31,7 @@ class sfInflector
     $tmp = sfToolkit::pregtr($tmp, array('#/(.?)#e'    => "'::'.strtoupper('\\1')",
                                          '/(^|_|-)+(.)/e' => "strtoupper('\\2')"));
 
-    return $tmp;
+    return strtr(ucwords(strtr($lower_case_and_underscored_word, array('/' => ':: ', '_' => ' ', '-' => ' '))), array(' ' => ''));
   }
 
   /**
