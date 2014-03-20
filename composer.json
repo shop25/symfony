@@ -1,0 +1,8 @@
+{
+    "name": "symfony/symfony1",
+    "description": "Symfony is a complete framework designed to optimize the development of web applications by way of several key features.",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
