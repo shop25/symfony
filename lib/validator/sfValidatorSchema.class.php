@@ -120,7 +120,7 @@ class sfValidatorSchema extends sfValidatorBase implements ArrayAccess
     // pre validator
     try
     {
-      $this->preClean($values);
+      $values = $this->preClean($values);
     }
     catch (sfValidatorErrorSchema $e)
     {
@@ -218,10 +218,10 @@ class sfValidatorSchema extends sfValidatorBase implements ArrayAccess
   {
     if (null === $validator = $this->getPreValidator())
     {
-      return;
+      return $values;
     }
 
-    $validator->clean($values);
+    return $validator->clean($values);
   }
 
   /**
