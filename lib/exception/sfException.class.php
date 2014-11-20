@@ -91,6 +91,15 @@ class sfException extends Exception
       // log all exceptions in php log
       error_log($exception->getMessage());
 
+      $handler = sfConfig::get('sf_exception_handler');
+      if ($handler) {
+          if (!is_callable($handler)) {
+              error_log('sf_exception_handler not callable as configured');
+          } else {
+              call_user_func($handler, $exception);
+          }
+      }
+
       // clean current output buffer
       while (ob_get_level())
       {
