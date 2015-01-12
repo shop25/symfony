@@ -643,6 +643,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
     public function buildPhpDocs(array $definition)
     {
         $ret = array();
+        $definedPrimary = false;
 
         $ret[] = $definition['className'];
         $ret[] = '';
@@ -676,6 +677,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                 $name = trim($name);
                 $fieldName = trim($fieldName);
 
+                // check for primary
+                if(isset($column['primary']) && $column['primary']) {
+                    $definedPrimary = true;
+                }
+
                 $ret[] = '@property ' . $column['type'] . ' $' . $fieldName;
             }
 
@@ -685,6 +691,14 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     $ret[] = '@property ' . $type . ' $' . $relation['alias'];
                 }
             }
+
+            if(!$definedPrimary) {
+                // @todo Should probably check the default identifier information rather than assuming integer and id
+                $primaryType = 'integer';
+                $primaryName = 'id';
+                $ret[] = '@property ' . $primaryType . ' $' . $primaryName;
+            }
+
             $ret[] = '';
         }
 
