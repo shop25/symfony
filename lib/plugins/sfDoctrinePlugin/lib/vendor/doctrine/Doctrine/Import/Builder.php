@@ -695,6 +695,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
 
         $ret = ' * ' . implode(PHP_EOL . ' * ', $ret);
         $ret = ' ' . trim($ret);
+        $ret = implode("\n", array_map('rtrim', explode("\n", $ret)));
 
         return $ret;
     }
