@@ -544,19 +544,19 @@ class Doctrine_Import_Builder extends Doctrine_Builder
             }
 
             $columnName = isset($column['name']) ? $column['name']:$name;
-            if ($manager->getAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE)) {
-                $e = explode(' as ', $columnName);
-                $fieldName = isset($e[1]) ? $e[1] : $e[0];
-                $classified = Doctrine_Inflector::classify($fieldName);
-                $getter = 'get' . $classified;
-                $setter = 'set' . $classified;
 
-                if ($refl->hasMethod($getter) || $refl->hasMethod($setter)) {
-                    throw new Doctrine_Import_Exception(
-                        sprintf('When using the attribute ATTR_AUTO_ACCESSOR_OVERRIDE you cannot use the field name "%s" because it is reserved by Doctrine. You must choose another field name.', $fieldName)
-                    );
-                }
+            $e = explode(' as ', $columnName);
+            $fieldName = isset($e[1]) ? $e[1] : $e[0];
+            $classified = Doctrine_Inflector::classify($fieldName);
+            $getter = 'get' . $classified;
+            $setter = 'set' . $classified;
+
+            if ($refl->hasMethod($getter) || $refl->hasMethod($setter)) {
+                throw new Doctrine_Import_Exception(
+                    sprintf('You cannot use the field name "%s" because it is reserved by Doctrine. You must choose another field name.', $fieldName)
+                );
             }
+
             $build .= "        ".'$this->hasColumn(\'' . $columnName . '\', \'' . $column['type'] . '\'';
 
             if ($column['length']) {

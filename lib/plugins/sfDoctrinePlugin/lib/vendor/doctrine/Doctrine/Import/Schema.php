@@ -104,7 +104,8 @@ class Doctrine_Import_Schema
                                                           'detect_relations',
                                                           'listeners',
                                                           'checks',
-                                                          'comment'),
+                                                          'comment',
+                                                          'concrete_accessors'),
 
                                    'column'     =>  array('name',
                                                           'format',
