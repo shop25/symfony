@@ -322,6 +322,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     . '{'
                     . '%s' . PHP_EOL
                     . '%s' . PHP_EOL
+                    . '%s'
                     . '}';
     }
 
@@ -622,13 +623,13 @@ class Doctrine_Import_Builder extends Doctrine_Builder
             // getters
             $ret .= PHP_EOL . '  public function get' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\$load = true)" . PHP_EOL;
             $ret .= "  {" . PHP_EOL;
-            $ret .= "    return \$this->get('{$name}', \$load);" . PHP_EOL;
+            $ret .= "    return \$this->_get('{$name}', \$load);" . PHP_EOL;
             $ret .= "  }" . PHP_EOL;
 
             // setters
             $ret .= PHP_EOL . '  public function set' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\${$name}, \$load = true)" . PHP_EOL;
             $ret .= "  {" . PHP_EOL;
-            $ret .= "    return \$this->set('{$name}', \${$name}, \$load);" . PHP_EOL;
+            $ret .= "    return \$this->_set('{$name}', \${$name}, \$load);" . PHP_EOL;
             $ret .= "  }" . PHP_EOL;
         }
 
@@ -982,9 +983,16 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if ( ! (isset($definition['no_definition']) && $definition['no_definition'] === true)) {
             $tableDefinitionCode = $this->buildTableDefinition($definition);
             $setUpCode = $this->buildSetUp($definition);
+
+            if (isset($definition['concrete_accessors']) && $definition['concrete_accessors'] === true) {
+                $accessors = $this->buildAccessors($definition);
+            } else {
+                $accessors = null;
+            }
         } else {
             $tableDefinitionCode = null;
             $setUpCode = null;
+            $accessors = null;
         }
 
         if ($tableDefinitionCode && $setUpCode) {
@@ -999,7 +1007,8 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                                        $className,
                                        $extends,
                                        $tableDefinitionCode,
-                                       $setUpCode);
+                                       $setUpCode,
+                                       $accessors);
 
         return $content;
     }
