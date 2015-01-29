@@ -650,6 +650,7 @@ class sfDoctrineFormGenerator extends sfGenerator
     $php = var_export($values, true);
     $php = str_replace("\n", '', $php);
     $php = str_replace('array (  ', 'array(', $php);
+    $php = str_replace('NULL', 'null', $php);
     $php = str_replace(',)', ')', $php);
     $php = str_replace('  ', ' ', $php);
     return $php;

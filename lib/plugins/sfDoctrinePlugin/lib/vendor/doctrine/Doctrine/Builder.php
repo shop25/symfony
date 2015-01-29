@@ -47,6 +47,7 @@ class Doctrine_Builder
         $export = str_replace('  ', ' ', $export);
         $export = str_replace('array (', 'array(', $export);
         $export = str_replace('array( ', 'array(', $export);
+        $export = str_replace('NULL', 'null', $export);
         $export = str_replace(',)', ')', $export);
         $export = str_replace(', )', ')', $export);
         $export = str_replace('  ', ' ', $export);
