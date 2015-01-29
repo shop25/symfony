@@ -323,7 +323,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     . '%s' . PHP_EOL
                     . '%s' . PHP_EOL
                     . '%s'
-                    . '}';
+                    . '}' . PHP_EOL;
     }
 
     /*

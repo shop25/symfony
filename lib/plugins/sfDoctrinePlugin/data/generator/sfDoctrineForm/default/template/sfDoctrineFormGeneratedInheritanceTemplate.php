@@ -33,8 +33,8 @@ abstract class Base<?php echo $this->modelName ?>Form extends <?php echo $this->
     {
         return '<?php echo $this->modelName ?>';
     }
-
 <?php if ($this->getManyToManyRelations()): ?>
+
     public function updateDefaultsFromObject()
     {
         parent::updateDefaultsFromObject();

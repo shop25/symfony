@@ -59,8 +59,8 @@ abstract class Base<?php echo $this->modelName ?>Form extends <?php echo $this->
     {
         return '<?php echo $this->modelName ?>';
     }
-
 <?php if ($this->getManyToManyRelations()): ?>
+
     public function updateDefaultsFromObject()
     {
         parent::updateDefaultsFromObject();
@@ -81,8 +81,8 @@ abstract class Base<?php echo $this->modelName ?>Form extends <?php echo $this->
 
         parent::doSave($con);
     }
-
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
+
     public function save<?php echo $relation['alias'] ?>List($con = null)
     {
         if (!$this->isValid()) {
@@ -114,7 +114,6 @@ abstract class Base<?php echo $this->modelName ?>Form extends <?php echo $this->
             $this->object->link('<?php echo $relation['alias'] ?>', array_values($link));
         }
     }
-
 <?php endforeach; ?>
 <?php endif; ?>
 }
