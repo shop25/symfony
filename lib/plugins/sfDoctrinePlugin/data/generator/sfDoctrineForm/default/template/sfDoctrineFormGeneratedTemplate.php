@@ -90,28 +90,28 @@ abstract class Base<?php echo $this->modelName ?>Form extends <?php echo $this->
         }
 
         if (!isset($this->widgetSchema['<?php echo $this->underscore($relation['alias']) ?>_list'])) {
-          // somebody has unset this widget
-          return;
+            // somebody has unset this widget
+            return;
         }
 
         if (null === $con) {
-          $con = $this->getConnection();
+            $con = $this->getConnection();
         }
 
         $existing = $this->object-><?php echo $relation['alias']; ?>->getPrimaryKeys();
         $values = $this->getValue('<?php echo $this->underscore($relation['alias']) ?>_list');
         if (!is_array($values)) {
-          $values = array();
+            $values = array();
         }
 
         $unlink = array_diff($existing, $values);
         if (count($unlink)) {
-          $this->object->unlink('<?php echo $relation['alias'] ?>', array_values($unlink));
+            $this->object->unlink('<?php echo $relation['alias'] ?>', array_values($unlink));
         }
 
         $link = array_diff($values, $existing);
         if (count($link)) {
-          $this->object->link('<?php echo $relation['alias'] ?>', array_values($link));
+            $this->object->link('<?php echo $relation['alias'] ?>', array_values($link));
         }
     }
 
