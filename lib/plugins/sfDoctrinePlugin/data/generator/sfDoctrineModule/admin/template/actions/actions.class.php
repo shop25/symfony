@@ -13,21 +13,20 @@ require_once(dirname(__FILE__).'/../lib/Base<?php echo ucfirst($this->moduleName
  */
 abstract class <?php echo $this->getGeneratedModuleName() ?>Actions extends <?php echo $this->getActionsBaseClass()."\n" ?>
 {
-  public function preExecute()
-  {
-    $this->configuration = new <?php echo $this->getModuleName() ?>GeneratorConfiguration();
-
-    if (!$this->getUser()->hasCredential($this->configuration->getCredentials($this->getActionName())))
+    public function preExecute()
     {
-      $this->forward(sfConfig::get('sf_secure_module'), sfConfig::get('sf_secure_action'));
+        $this->configuration = new <?php echo $this->getModuleName() ?>GeneratorConfiguration();
+
+        if (!$this->getUser()->hasCredential($this->configuration->getCredentials($this->getActionName()))) {
+            $this->forward(sfConfig::get('sf_secure_module'), sfConfig::get('sf_secure_action'));
+        }
+
+        $this->dispatcher->notify(new sfEvent($this, 'admin.pre_execute', array('configuration' => $this->configuration)));
+
+        $this->helper = new <?php echo $this->getModuleName() ?>GeneratorHelper();
+
+        parent::preExecute();
     }
-
-    $this->dispatcher->notify(new sfEvent($this, 'admin.pre_execute', array('configuration' => $this->configuration)));
-
-    $this->helper = new <?php echo $this->getModuleName() ?>GeneratorHelper();
-
-    parent::preExecute();
-  }
 
 <?php include dirname(__FILE__).'/../../parts/indexAction.php' ?>
 
