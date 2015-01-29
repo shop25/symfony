@@ -621,16 +621,16 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         $ret = '';
         foreach ($accessors as $name) {
             // getters
-            $ret .= PHP_EOL . '  public function get' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\$load = true)" . PHP_EOL;
-            $ret .= "  {" . PHP_EOL;
-            $ret .= "    return \$this->_get('{$name}', \$load);" . PHP_EOL;
-            $ret .= "  }" . PHP_EOL;
+            $ret .= PHP_EOL . '    public function get' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\$load = true)" . PHP_EOL;
+            $ret .= "    {" . PHP_EOL;
+            $ret .= "        return \$this->_get('{$name}', \$load);" . PHP_EOL;
+            $ret .= "    }" . PHP_EOL;
 
             // setters
-            $ret .= PHP_EOL . '  public function set' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\${$name}, \$load = true)" . PHP_EOL;
-            $ret .= "  {" . PHP_EOL;
-            $ret .= "    return \$this->_set('{$name}', \${$name}, \$load);" . PHP_EOL;
-            $ret .= "  }" . PHP_EOL;
+            $ret .= PHP_EOL . '    public function set' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\${$name}, \$load = true)" . PHP_EOL;
+            $ret .= "    {" . PHP_EOL;
+            $ret .= "        return \$this->_set('{$name}', \${$name}, \$load);" . PHP_EOL;
+            $ret .= "    }" . PHP_EOL;
         }
 
         return $ret;
