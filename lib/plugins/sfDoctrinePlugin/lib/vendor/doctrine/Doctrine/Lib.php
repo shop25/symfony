@@ -385,4 +385,25 @@ class Doctrine_Lib
 
         return true;
     }
+
+    /**
+     * Converts a Doctrine Type to a PHP Type
+     *
+     * This method was built to be used for phpDoc generation
+     * @param string $doctrineType
+     * @return string
+     */
+    public static function convertDoctrineTypeToPhpType($doctrineType)
+    {
+        # @TODO add the rest of the Doctrine Types
+        switch($doctrineType) {
+            case 'timestamp':
+            case 'time':
+            case 'date':
+            case 'enum':
+                return 'string';
+                break;
+        }
+        return $doctrineType;
+    }
 }

@@ -683,7 +683,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     $definedPrimary = true;
                 }
 
-                $ret[] = '@property ' . $column['type'] . ' $' . $fieldName;
+                $ret[] = '@property ' . Doctrine_Lib::convertDoctrineTypeToPhpType($column['type']) . ' $' . $fieldName;
             }
 
             if (isset($definition['relations']) && ! empty($definition['relations'])) {
