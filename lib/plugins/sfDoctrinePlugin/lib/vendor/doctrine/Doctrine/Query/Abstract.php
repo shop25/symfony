@@ -869,12 +869,26 @@ abstract class Doctrine_Query_Abstract
      * calculateQueryCacheHash
      * calculate hash key for query cache
      *
+     * @param array $params
      * @return string    the hash
      */
-    public function calculateQueryCacheHash()
+    public function calculateQueryCacheHash($params)
     {
         $dql = $this->getDql();
-        $hash = md5($dql . var_export($this->_pendingJoinConditions, true) . 'DOCTRINE_QUERY_CACHE_SALT');
+
+        // #DC-600 for where->(".. IN ?") clauses, accommodate variable length params
+        $counts = [];
+        foreach ($params as $key => $param) {
+            if (is_array($param)) {
+                $counts[$key] = count($param);
+            } else {
+                $counts[$key] = 1;
+            }
+        }
+
+        // #DC-811 use serialize instead of var_export for cache key creation
+        $hash = md5($dql . serialize($counts) . serialize($this->_pendingJoinConditions) . 'DOCTRINE_QUERY_CACHE_SALT');
+
         return $hash;
     }
 
@@ -931,7 +945,7 @@ abstract class Doctrine_Query_Abstract
         if ( ! $this->_view) {
             if ($this->_queryCache !== false && ($this->_queryCache || $this->_conn->getAttribute(Doctrine_Core::ATTR_QUERY_CACHE))) {
                 $queryCacheDriver = $this->getQueryCacheDriver();
-                $hash = $this->calculateQueryCacheHash();
+                $hash = $this->calculateQueryCacheHash($dqlParams);
                 $cached = $queryCacheDriver->fetch($hash);
 
                 // If we have a cached query...
