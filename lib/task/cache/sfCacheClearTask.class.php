@@ -104,8 +104,6 @@ EOF;
 
         $appConfiguration = ProjectConfiguration::getApplicationConfiguration($app, $env, true);
 
-        $this->lock($app, $env);
-
         $event = $appConfiguration->getEventDispatcher()->notifyUntil(new sfEvent($this, 'task.cache.clear', array('app' => $appConfiguration, 'env' => $env, 'type' => $options['type'])));
         if (!$event->isProcessed())
         {
@@ -117,8 +115,6 @@ EOF;
           }
           $this->$method($appConfiguration);
         }
-
-        $this->unlock($app, $env);
       }
     }
 
@@ -233,25 +229,5 @@ EOF;
       $cache = new $class($parameters);
       $cache->clean();
     }
-  }
-
-  protected function lock($app, $env)
-  {
-    // create a lock file
-    $this->getFilesystem()->touch($this->getLockFile($app, $env));
-
-    // change mode so the web user can remove it if we die
-    $this->getFilesystem()->chmod($this->getLockFile($app, $env), 0777);
-  }
-
-  protected function unlock($app, $env)
-  {
-    // release lock
-    $this->getFilesystem()->remove($this->getLockFile($app, $env));
-  }
-
-  protected function getLockFile($app, $env)
-  {
-    return sfConfig::get('sf_data_dir').'/'.$app.'_'.$env.'-cli.lck';
   }
 }

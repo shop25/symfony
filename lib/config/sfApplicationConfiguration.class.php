@@ -50,11 +50,6 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
 
     $this->initConfiguration();
 
-    if (sfConfig::get('sf_check_lock'))
-    {
-      $this->checkLock();
-    }
-
     if (file_exists($file = sfConfig::get('sf_app_cache_dir').'/config/configuration.php'))
     {
       $this->cache = require $file;
@@ -178,10 +173,10 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
 
   /**
    * Adds enabled plugins to autoload config.
-   * 
+   *
    * @param   sfEvent $event
    * @param   array   $config
-   * 
+   *
    * @return  array
    */
   public function filterAutoloadConfig(sfEvent $event, array $config)
@@ -207,72 +202,6 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
     }
 
     return $this->configCache;
-  }
-
-  /**
-   * Check lock files to see if we're not in a cache cleaning process.
-   *
-   * @return void
-   */
-  public function checkLock()
-  {
-    if (
-      $this->hasLockFile(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.$this->getApplication().'_'.$this->getEnvironment().'-cli.lck', 5)
-      ||
-      $this->hasLockFile(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.$this->getApplication().'_'.$this->getEnvironment().'.lck')
-    )
-    {
-      // application is not available - we'll find the most specific unavailable page...
-      $files = array(
-        sfConfig::get('sf_app_config_dir').'/unavailable.php',
-        sfConfig::get('sf_config_dir').'/unavailable.php',
-        sfConfig::get('sf_web_dir').'/errors/unavailable.php',
-        $this->getSymfonyLibDir().'/exception/data/unavailable.php',
-      );
-
-      foreach ($files as $file)
-      {
-        if (is_readable($file))
-        {
-          header("HTTP/1.1 503 Service Temporarily Unavailable");
-          header("Status: 503 Service Temporarily Unavailable");
-
-          include $file;
-          break;
-        }
-      }
-
-      die(1);
-    }
-  }
-
-  /**
-   * Determines if a lock file is present.
-   *
-   * @param  string  $lockFile             Name of the lock file.
-   * @param  integer $maxLockFileLifeTime  A max amount of life time for the lock file.
-   *
-   * @return bool true, if the lock file is present, otherwise false.
-   */
-  protected function hasLockFile($lockFile, $maxLockFileLifeTime = 0)
-  {
-    $isLocked = false;
-    if (is_readable($lockFile) && ($last_access = fileatime($lockFile)))
-    {
-      $now = time();
-      $timeDiff = $now - $last_access;
-
-      if (!$maxLockFileLifeTime || $timeDiff < $maxLockFileLifeTime)
-      {
-        $isLocked = true;
-      }
-      else
-      {
-        $isLocked = @unlink($lockFile) ? false : true;
-      }
-    }
-
-    return $isLocked;
   }
 
   /**
