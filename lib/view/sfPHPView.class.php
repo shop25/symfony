@@ -66,6 +66,8 @@ class sfPHPView extends sfView
     $vars = $this->attributeHolder->toArray();
     extract($vars);
 
+    $ob_level = ob_get_level();
+
     // render
     ob_start();
     ob_implicit_flush(0);
@@ -76,8 +78,10 @@ class sfPHPView extends sfView
     }
     catch (Exception $e)
     {
-      // need to end output buffering before throwing the exception #7596
-      ob_end_clean();
+      while (ob_get_level() > $ob_level) {
+        // need to end output buffering before throwing the exception #7596
+        ob_end_clean();
+      }
       throw $e;
     }
 
