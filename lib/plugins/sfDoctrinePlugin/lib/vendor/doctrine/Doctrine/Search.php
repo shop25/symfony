@@ -320,7 +320,9 @@ class Doctrine_Search extends Doctrine_Record_Generator
         // So that 'keyword' is the first field in the table
         $previousIdentifier = array();
         foreach ($this->_table->getIdentifier() as $name) {
-            $previousIdentifier[$name] = $this->_table->getColumnDefinition($name);
+//            $previousIdentifier[$name] = $this->_table->getColumnDefinition($name);
+            // use-column-name-for-definition-retrieval.patch @ Github user: Lenar
+            $previousIdentifier[$name] = $this->_table->getColumnDefinition($this->_table->getColumnName($name));
             $this->_table->removeColumn($name);
         }
 

@@ -195,8 +195,7 @@ class Doctrine_Core
     const ATTR_MODEL_LOADING                = 161;
     const ATTR_RECURSIVE_MERGE_FIXTURES     = 162;
     const ATTR_USE_DQL_CALLBACKS            = 164;
-    // Featured removed.
-    //const ATTR_AUTO_ACCESSOR_OVERRIDE       = 165;
+    const ATTR_AUTO_ACCESSOR_OVERRIDE       = 165;
     const ATTR_AUTO_FREE_QUERY_OBJECTS      = 166;
     const ATTR_DEFAULT_TABLE_CHARSET        = 167;
     const ATTR_DEFAULT_TABLE_COLLATE        = 168;

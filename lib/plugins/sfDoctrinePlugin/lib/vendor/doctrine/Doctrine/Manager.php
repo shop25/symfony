@@ -152,6 +152,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine_Core::ATTR_DEFAULT_PARAM_NAMESPACE      => 'doctrine',
                         Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES       => false,
                         Doctrine_Core::ATTR_USE_DQL_CALLBACKS            => false,
+                        Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE       => false,
                         Doctrine_Core::ATTR_AUTO_FREE_QUERY_OBJECTS      => false,
                         Doctrine_Core::ATTR_DEFAULT_IDENTIFIER_OPTIONS   => array(),
                         Doctrine_Core::ATTR_DEFAULT_COLUMN_OPTIONS       => array(),
@@ -756,7 +757,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * Register validators so that Doctrine is aware of them
      *
-     * @param  mixed $validators Name of validator or array of validators
+     * @param  mixed $validators Name of validator or array of validators
      * @return void
      */
     public function registerValidators($validators)

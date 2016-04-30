@@ -150,7 +150,6 @@ class Doctrine_Migration
 
                     $array = array_diff(get_declared_classes(), $classes);
                     $className = end($array);
-                    $classes = get_declared_classes();
 
                     if ($className) {
                         $e = explode('_', $file->getFileName());

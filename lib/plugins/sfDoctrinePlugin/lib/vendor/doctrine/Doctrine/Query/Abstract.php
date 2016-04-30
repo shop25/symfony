@@ -869,26 +869,12 @@ abstract class Doctrine_Query_Abstract
      * calculateQueryCacheHash
      * calculate hash key for query cache
      *
-     * @param array $params
      * @return string    the hash
      */
-    public function calculateQueryCacheHash($params)
+    public function calculateQueryCacheHash()
     {
         $dql = $this->getDql();
-
-        // #DC-600 for where->(".. IN ?") clauses, accommodate variable length params
-        $counts = [];
-        foreach ($params as $key => $param) {
-            if (is_array($param)) {
-                $counts[$key] = count($param);
-            } else {
-                $counts[$key] = 1;
-            }
-        }
-
-        // #DC-811 use serialize instead of var_export for cache key creation
-        $hash = md5($dql . serialize($counts) . serialize($this->_pendingJoinConditions) . 'DOCTRINE_QUERY_CACHE_SALT');
-
+        $hash = md5($dql . var_export($this->_pendingJoinConditions, true) . 'DOCTRINE_QUERY_CACHE_SALT');
         return $hash;
     }
 
@@ -945,7 +931,7 @@ abstract class Doctrine_Query_Abstract
         if ( ! $this->_view) {
             if ($this->_queryCache !== false && ($this->_queryCache || $this->_conn->getAttribute(Doctrine_Core::ATTR_QUERY_CACHE))) {
                 $queryCacheDriver = $this->getQueryCacheDriver();
-                $hash = $this->calculateQueryCacheHash($dqlParams);
+                $hash = $this->calculateQueryCacheHash();
                 $cached = $queryCacheDriver->fetch($hash);
 
                 // If we have a cached query...
@@ -1132,8 +1118,8 @@ abstract class Doctrine_Query_Abstract
                 $params = array('component' => $component, 'alias' => $alias);
                 $event = new Doctrine_Event($record, $callback['const'], $this, $params);
 
-                $record->$callback['callback']($event);
-                $table->getRecordListener()->$callback['callback']($event);
+                $record->{$callback['callback']}($event);
+                $table->getRecordListener()->{$callback['callback']}($event);
             }
         }
 
@@ -1163,7 +1149,7 @@ abstract class Doctrine_Query_Abstract
         $copy->free();
 
         if ($componentsBefore !== $componentsAfter) {
-            return array_diff_assoc($componentsAfter, $componentsBefore);
+            return Doctrine_Lib::arrayDiffSimple($componentsAfter, $componentsBefore);
         } else {
             return $componentsAfter;
         }

@@ -160,6 +160,20 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     protected $_pendingUnlinks = array();
 
     /**
+     * Array of custom accessors for cache
+     *
+     * @var array
+     */
+    protected static $_customAccessors = array();
+
+    /**
+     * Array of custom mutators for cache
+     *
+     * @var array
+     */
+    protected static $_customMutators = array();
+
+    /**
      * Whether or not to serialize references when a Doctrine_Record is serialized
      *
      * @var boolean
@@ -1189,6 +1203,131 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
 
     /**
+     * sets a fieldname to have a custom accessor or check if a field has a custom
+     * accessor defined (when called without $accessor parameter).
+     *
+     * @param string $fieldName 
+     * @param string $accessor 
+     * @return boolean
+     */
+    public function hasAccessor($fieldName, $accessor = null)
+    {
+        $componentName = $this->_table->getComponentName();
+        if ($accessor) {
+            self::$_customAccessors[$componentName][$fieldName] = $accessor;
+        } else {
+            return (isset(self::$_customAccessors[$componentName][$fieldName]) && self::$_customAccessors[$componentName][$fieldName]);
+        }
+    }
+
+    /**
+     * clears the accessor for a field name
+     *
+     * @param string $fieldName 
+     * @return void
+     */
+    public function clearAccessor($fieldName)
+    {
+        $componentName = $this->_table->getComponentName();
+        unset(self::$_customAccessors[$componentName][$fieldName]);
+    }
+
+    /**
+     * gets the custom accessor for a field name
+     *
+     * @param string $fieldName 
+     * @return string $accessor
+     */
+    public function getAccessor($fieldName)
+    {
+        if ($this->hasAccessor($fieldName)) {
+            $componentName = $this->_table->getComponentName();
+            return self::$_customAccessors[$componentName][$fieldName];
+        }
+    }
+
+    /**
+     * gets all accessors for this component instance
+     *
+     * @return array $accessors
+     */
+    public function getAccessors()
+    {
+        $componentName = $this->_table->getComponentName();
+        return isset(self::$_customAccessors[$componentName]) ? self::$_customAccessors[$componentName] : array();
+    }
+
+    /**
+     * sets a fieldname to have a custom mutator or check if a field has a custom
+     * mutator defined (when called without the $mutator parameter)
+     *
+     * @param string $fieldName 
+     * @param string $mutator 
+     * @return boolean
+     */
+    public function hasMutator($fieldName, $mutator = null)
+    {
+        $componentName = $this->_table->getComponentName();
+        if ($mutator) {
+            self::$_customMutators[$componentName][$fieldName] = $mutator;
+        } else {
+            return (isset(self::$_customMutators[$componentName][$fieldName]) && self::$_customMutators[$componentName][$fieldName]);
+        }
+    }
+
+    /**
+     * gets the custom mutator for a field name
+     *
+     * @param string $fieldname 
+     * @return string
+     */
+    public function getMutator($fieldName)
+    {
+        if ($this->hasMutator($fieldName)) {
+            $componentName = $this->_table->getComponentName();
+            return self::$_customMutators[$componentName][$fieldName];
+        }
+    }
+
+    /**
+     * clears the custom mutator for a field name
+     *
+     * @param string $fieldName 
+     * @return void
+     */
+    public function clearMutator($fieldName)
+    {
+        $componentName = $this->_table->getComponentName();
+        unset(self::$_customMutators[$componentName][$fieldName]);
+    }
+
+    /**
+     * gets all custom mutators for this component instance
+     *
+     * @return array $mutators
+     */
+    public function getMutators()
+    {
+        $componentName = $this->_table->getComponentName();
+//        return self::$_customMutators[$componentName];
+        // isset-for-record-getmutators.patch @ Github user: Lenar
+        return isset(self::$_customMutators[$componentName]) ? self::$_customMutators[$componentName] : array();
+    }
+
+    /**
+     * Set a fieldname to have a custom accessor and mutator
+     *
+     * @param string $fieldname
+     * @param string $accessor
+     * @param string $mutator
+     */
+    public function hasAccessorMutator($fieldName, $accessor, $mutator)
+    {
+        $this->hasAccessor($fieldName, $accessor);
+        $this->hasMutator($fieldName, $mutator);
+    }
+
+    /**
      * returns a value of a property or a related component
      *
      * @param mixed $fieldName                  name of the property or related component
@@ -1198,12 +1337,18 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function get($fieldName, $load = true)
     {
-        $accessor = 'get' . Doctrine_Inflector::classify($fieldName);
+        if ($this->_table->getAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE) || $this->hasAccessor($fieldName)) {
+            $componentName = $this->_table->getComponentName();
 
-        if (method_exists($this, $accessor)) {
-            return $this->$accessor($load, $fieldName);
+            $accessor = $this->hasAccessor($fieldName) 
+                ? $this->getAccessor($fieldName)
+                : 'get' . Doctrine_Inflector::classify($fieldName);
+
+            if ($this->hasAccessor($fieldName) || method_exists($this, $accessor)) {
+                $this->hasAccessor($fieldName, $accessor);
+                return $this->$accessor($load, $fieldName);
+            }
         }
-
         return $this->_get($fieldName, $load);
     }
 
@@ -1299,12 +1444,17 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function set($fieldName, $value, $load = true)
     {
-        $mutator = 'set' . Doctrine_Inflector::classify($fieldName);
+        if ($this->_table->getAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE) || $this->hasMutator($fieldName)) {
+            $componentName = $this->_table->getComponentName();
+            $mutator = $this->hasMutator($fieldName)
+                ? $this->getMutator($fieldName):
+                'set' . Doctrine_Inflector::classify($fieldName);
 
-        if (method_exists($this, $mutator)) {
-            return $this->$mutator($value, $load, $fieldName);
+            if ($this->hasMutator($fieldName) || method_exists($this, $mutator)) {
+                $this->hasMutator($fieldName, $mutator);
+                return $this->$mutator($value, $load, $fieldName);
+            }
         }
-
         return $this->_set($fieldName, $value, $load);
     }
 
@@ -1782,7 +1932,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         // [FIX] Prevent mapped Doctrine_Records from being displayed fully
         foreach ($this->_values as $key => $value) {
             $a[$key] = ($value instanceof Doctrine_Record || $value instanceof Doctrine_Collection)
-                ? $value->toArray($deep, $prefixKey) : $value;
+//                ? $value->toArray($deep, $prefixKey) : $value;
+                // return-mapped-values-from-toarray.patch @ Github user: Lenar
+                ? $value->toArray($deep, $prefixKey) : $this->get($key);
+
         }
 
         $this->_state = $stateBeforeLock;
@@ -2213,8 +2366,13 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function loadReference($name)
     {
-        $rel = $this->_table->getRelation($name);
-        $this->_references[$name] = $rel->fetchRelatedFor($this);
+//        $rel = $this->_table->getRelation($name);
+//        $this->_references[$name] = $rel->fetchRelatedFor($this);
+        // load-only-non-existent-references.patch @ Github user: Lenar
+        if (!isset($this->_references[$name]) || $this->_references[$name] === self::$_null) {
+            $rel = $this->_table->getRelation($name);
+            $this->_references[$name] = $rel->fetchRelatedFor($this);
+        }
     }
 
     /**

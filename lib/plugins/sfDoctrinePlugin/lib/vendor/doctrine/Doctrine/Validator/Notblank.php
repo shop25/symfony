@@ -41,6 +41,8 @@ class Doctrine_Validator_Notblank extends Doctrine_Validator_Driver
      */
     public function validate($value)
     {
-        return (trim($value) !== '' && $value !== null);
+//        return (trim($value) !== '' && $value !== null);
+        // null-value-is-not-blank.patch @ Github user: Lenar
+        return (trim($value) !== '' || is_null($value));
     }
 }

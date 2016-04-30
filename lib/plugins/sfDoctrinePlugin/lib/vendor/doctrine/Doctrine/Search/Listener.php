@@ -30,7 +30,7 @@
  * @link        www.doctrine-project.org
  * @since       1.0
  */
-class Doctrine_Search_Listener extends Doctrine_Record_Listener 
+class Doctrine_Search_Listener extends Doctrine_Record_Listener
 {
     protected $_search;
 
@@ -45,15 +45,18 @@ class Doctrine_Search_Listener extends Doctrine_Record_Listener
 
     public function postUpdate(Doctrine_Event $event)
     {
-        $record = $event->getInvoker(); 
+        $record = $event->getInvoker();
 
-        $this->_search->updateIndex($record->toArray()); 
+        // search-reindex-less.patch @ Github user: Lenar
+        if (array_intersect_key(array_flip($this->_search->getOption('fields')), $record->getLastModified())) {
+            $this->_search->updateIndex($record->toArray());
+        }
     }
 
     public function postInsert(Doctrine_Event $event)
     {
         $record = $event->getInvoker();
-        
+
         $this->_search->updateIndex($record->toArray());
     }
 }
