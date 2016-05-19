@@ -129,11 +129,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
      */
     protected $_classPrefix = null;
 
-    /** 
-     * Whether to use the class prefix for the filenames too 
-     * 
-     * @var boolean 
-     **/ 
+    /**
+     * Whether to use the class prefix for the filenames too
+     *
+     * @var boolean
+     **/
     protected $_classPrefixFiles = true;
 
     /**
@@ -425,11 +425,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                 if (isset($relation['refClass'])) {
                     $a[] = '\'refClass\' => ' . $this->varExport($relation['refClass']);
                 }
-                
+
                 if (isset($relation['refClassRelationAlias'])) {
                     $a[] = '\'refClassRelationAlias\' => ' . $this->varExport($relation['refClassRelationAlias']);
                 }
-                
+
                 if (isset($relation['deferred']) && $relation['deferred']) {
                     $a[] = '\'default\' => ' . $this->varExport($relation['deferred']);
                 }
@@ -536,25 +536,25 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     sprintf('When using a column alias you cannot pass it via column name and column alias definition (column: %s).', $column['name'])
                 );
             }
-            
+
             // Update column name if an alias is provided
             if (isset($column['alias']) && !isset($column['name'])) {
                 $column['name'] = $name . ' as ' . $column['alias'];
             }
-          
+
             $columnName = isset($column['name']) ? $column['name']:$name;
             if ($manager->getAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE)) {
-                $e = explode(' as ', $columnName);
-                $fieldName = isset($e[1]) ? $e[1] : $e[0];
-                $classified = Doctrine_Inflector::classify($fieldName);
-                $getter = 'get' . $classified;
-                $setter = 'set' . $classified;
+            $e = explode(' as ', $columnName);
+            $fieldName = isset($e[1]) ? $e[1] : $e[0];
+            $classified = Doctrine_Inflector::classify($fieldName);
+            $getter = 'get' . $classified;
+            $setter = 'set' . $classified;
 
-                if ($refl->hasMethod($getter) || $refl->hasMethod($setter)) {
-                    throw new Doctrine_Import_Exception(
+            if ($refl->hasMethod($getter) || $refl->hasMethod($setter)) {
+                throw new Doctrine_Import_Exception(
                         sprintf('When using the attribute ATTR_AUTO_ACCESSOR_OVERRIDE you cannot use the field name "%s" because it is reserved by Doctrine. You must choose another field name.', $fieldName)
-                    );
-                }
+                );
+            }
             }
             $build .= "        ".'$this->hasColumn(\'' . $columnName . '\', \'' . $column['type'] . '\'';
 
@@ -608,31 +608,76 @@ class Doctrine_Import_Builder extends Doctrine_Builder
      */
     public function buildAccessors(array $definition)
     {
-        $accessors = array();
-        foreach (array_keys($definition['columns']) as $name) {
-            $accessors[] = $name;
-        }
-
-        foreach ($definition['relations'] as $relation) {
-            $accessors[] = $relation['alias'];
-        }
-
-        $ret = '';
-        foreach ($accessors as $name) {
+        $accessorTemplate = function ($accessorName, $returnType) {
             // getters
-            $ret .= PHP_EOL . '  public function get' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\$load = true)" . PHP_EOL;
-            $ret .= "  {" . PHP_EOL;
-            $ret .= "    return \$this->get('{$name}', \$load);" . PHP_EOL;
-            $ret .= "  }" . PHP_EOL;
+            $ret = '';
+            $ret .= '    /**' . PHP_EOL;
+            $ret .= '     * @param bool $load' . PHP_EOL;
+            $ret .= '     *' . PHP_EOL;
+            $ret .= '     * @return ' . $returnType . PHP_EOL;
+            $ret .= '     */' . PHP_EOL;
+            $ret .= '    public function get' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($accessorName)) . "(\$load = true)" . PHP_EOL;
+            $ret .= "    {" . PHP_EOL;
+            $ret .= "        return \$this->_get('{$accessorName}', \$load);" . PHP_EOL;
+            $ret .= "    }" . PHP_EOL . PHP_EOL;
 
             // setters
-            $ret .= PHP_EOL . '  public function set' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($name)) . "(\${$name}, \$load = true)" . PHP_EOL;
-            $ret .= "  {" . PHP_EOL;
-            $ret .= "    return \$this->set('{$name}', \${$name}, \$load);" . PHP_EOL;
-            $ret .= "  }" . PHP_EOL;
+            $ret .= '    /**' . PHP_EOL;
+            $ret .= "     * @param mixed \${$accessorName}" . PHP_EOL;
+            $ret .= '     * @param bool $load' . PHP_EOL;
+            $ret .= '     *' . PHP_EOL;
+            $ret .= '     * @return self' . PHP_EOL;
+            $ret .= '     */' . PHP_EOL;
+            $ret .= '    public function set' . Doctrine_Inflector::classify(Doctrine_Inflector::tableize($accessorName)) . "(\${$accessorName}, \$load = true)" . PHP_EOL;
+            $ret .= "    {" . PHP_EOL;
+            $ret .= "        return \$this->_set('{$accessorName}', \${$accessorName}, \$load);" . PHP_EOL;
+            $ret .= "    }" . PHP_EOL;
+
+            return $ret;
+        };
+
+        $definedPrimary = false;
+
+        $ret = '';
+        foreach ($definition['columns'] as $name => $column) {
+            $ret .= PHP_EOL . $accessorTemplate($name, $this->getPhpTypeForColumn($column));
+
+            // check for primary
+            if (isset($column['primary']) && $column['primary']) {
+                $definedPrimary = true;
+            }
+        }
+
+        if (isset($definition['relations']) && !empty($definition['relations'])) {
+            foreach ($definition['relations'] as $relation) {
+                $ret .= PHP_EOL . $accessorTemplate($relation['alias'], $this->getPhpTypeForRelation($relation));
+            }
+        }
+
+        if (!$definedPrimary) {
+            // @todo Should probably check the default identifier information rather than assuming integer and id
+            $ret .= PHP_EOL . $accessorTemplate('id', 'integer');
         }
 
         return $ret;
+    }
+
+    /**
+     * @param array $column
+     * @return string
+     */
+    protected function getPhpTypeForColumn(array $column)
+    {
+        return Doctrine_Lib::convertDoctrineTypeToPhpType($column['type']);
+    }
+
+    /**
+     * @param array $relation
+     * @return string
+     */
+    protected function getPhpTypeForRelation(array $relation)
+    {
+        return (isset($relation['type']) && $relation['type'] == Doctrine_Relation::MANY) ? 'Doctrine_Collection' : $this->_classPrefix . $relation['class'];
     }
 
     /*
@@ -676,12 +721,12 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                 $name = trim($name);
                 $fieldName = trim($fieldName);
 
-                $ret[] = '@property ' . $column['type'] . ' $' . $fieldName;
+                $ret[] = '@property ' . $this->getPhpTypeForColumn($column) . ' $' . $fieldName;
             }
 
             if (isset($definition['relations']) && ! empty($definition['relations'])) {
                 foreach ($definition['relations'] as $relation) {
-                    $type = (isset($relation['type']) && $relation['type'] == Doctrine_Relation::MANY) ? 'Doctrine_Collection' : $this->_classPrefix . $relation['class'];
+                    $type = $this->getPhpTypeForRelation($relation);
                     $ret[] = '@property ' . $type . ' $' . $relation['alias'];
                 }
             }
@@ -798,17 +843,17 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                         } else {
                             $leftActAs[$name] = $options[$name];
                         }
-                    } 
+                    }
 
                     $optionPHP = $this->varExport($realOptions);
-                    $build .= $this->emitAssign($level, $template, $optionPHP); 
+                    $build .= $this->emitAssign($level, $template, $optionPHP);
                     if ($level == 0) {
                         $emittedActAs[] = $this->emitActAs($level, $template);
                     } else {
                         $build .= $this->emitAddChild($level, $currentParent, $template);
                     }
                     // descend for the remainings actAs
-                    $parent = $template;            
+                    $parent = $template;
                     $build .= $this->innerBuildActAs($leftActAs, $level, $template, $emittedActAs);
                 } else {
                     $build .= $this->emitAssign($level, $template, null);
@@ -817,7 +862,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     } else {
                         $build .= $this->emitAddChild($level, $currentParent, $template);
                     }
-                    $parent = $template;            
+                    $parent = $template;
                 }
             }
         } else {
@@ -835,20 +880,20 @@ class Doctrine_Import_Builder extends Doctrine_Builder
     /**
      * Build php code for adding record listeners
      *
-     * @param string $listeners 
+     * @param string $listeners
      * @return string $build
      */
     public function buildListeners($listeners)
     {
         $build = '';
-        
+
         foreach($listeners as $name => $options) {
             if ( ! is_array($options) && $options !== null) {
                 $name = $options;
                 $options = null;
             }
 
-            $useOptions = ( ! empty($options) && isset($options['useOptions']) && $options['useOptions'] == true) 
+            $useOptions = ( ! empty($options) && isset($options['useOptions']) && $options['useOptions'] == true)
                 ? '$this->getTable()->getOptions()' : 'array()';
             $class = ( ! empty($options) && isset($options['class'])) ? $options['class'] : $name;
 
@@ -868,7 +913,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
     {
         $build = PHP_EOL;
         foreach ($attributes as $key => $value) {
-    
+
             $values = array();
             if (is_bool($value))
             {
@@ -877,7 +922,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                 if ( ! is_array($value)) {
                     $value = array($value);
                 }
-    
+
                 foreach ($value as $attr) {
                     $const = "Doctrine_Core::" . strtoupper($key) . "_" . strtoupper($attr);
                     if (defined($const)) {
@@ -887,11 +932,11 @@ class Doctrine_Import_Builder extends Doctrine_Builder
                     }
                 }
             }
-    
+
             $string = implode(' ^ ', $values);
             $build .= "        \$this->setAttribute(Doctrine_Core::ATTR_" . strtoupper($key) . ", " . $string . ");" . PHP_EOL;
         }
-    
+
         return $build;
     }
 
@@ -977,7 +1022,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         }
 
         $setUpCode.= $this->buildToString($definition);
-        
+
         $docs = PHP_EOL . $this->buildPhpDocs($definition);
 
         $content = sprintf(self::$_tpl, $docs, $abstract,
@@ -1127,7 +1172,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
         if ($prefix = $this->_classPrefix) {
             $className = $prefix . $definition['tableClassName'];
             if ($this->_classPrefixFiles) {
-                $fileName = $className . $this->_suffix;               
+                $fileName = $className . $this->_suffix;
             } else {
                 $fileName = $definition['tableClassName'] . $this->_suffix;
             }
