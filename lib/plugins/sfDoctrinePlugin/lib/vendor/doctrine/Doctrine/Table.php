@@ -2073,7 +2073,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             // skip-validation-of-relation-identifier.patch + fix-for-skip-validation-of-relation-identifier.patch @ Github user: Lenar
             $r = $this->_relationIdentifiers[$fieldName];
             // Related record is not saved yet
-            if (!$record->hasReference($r) || !$record->$r->exists()) {
+            if (!$record->hasReference($r) || !$record->{$r}) {
                 return $errorStack;
             }
         }
@@ -2765,7 +2765,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $fieldsFound = $matches[1];
         $operatorFound = array_map('strtoupper', $matches[2]);
 
-        // Check if $fieldName has unidentified parts left 
+        // Check if $fieldName has unidentified parts left
         if (strlen(implode('', $fieldsFound) . implode('', $operatorFound)) !== strlen($fieldName)) {
             $expression = preg_replace('/(' . implode('|', $fields) . ')(Or|And)?/', '($1)$2', $fieldName);
             throw new Doctrine_Table_Exception('Invalid expression found: ' . $expression);
