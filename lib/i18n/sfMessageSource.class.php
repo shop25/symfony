@@ -27,6 +27,7 @@
  *  # XLIFF -- using XML XLIFF format to store the translation messages.
  *  # SQLite -- Store the translation messages in a SQLite database.
  *  # MySQL -- Using a MySQL database to store the messages.
+ *  # MySQLi -- Using a MySQL database to store the messages (through mysqli).
  *  # gettext -- Translated messages are stored in the gettext format.
  *
  * A custom message source can be instantiated by specifying the filename
@@ -48,6 +49,21 @@
  * <code>
  *   $dsn = 'mysql://username:password@localhost/messages';
  *   $source = sfMessageSource::factory('MySQL', $dsn);
+ *
+ *   //set the culture and cache, store the cache in the /tmp directory.
+ *   $source->setCulture('en_AU')l
+ *   $source->setCache(new sfMessageCache(new sfFileCache(array('/tmp'))));
+ *
+ *   $formatter = new sfMessageFormat($source);
+ * </code>
+ *
+ * The following example instantiates a MySQLi message source, set the culture,
+ * set the cache handler, and use the source in a message formatter.
+ * The messages are store in a database named "messages". The source parameter
+ * for the actory method is a PEAR DB style DSN.
+ * <code>
+ *   $dsn = 'mysql://username:password@localhost/messages';
+ *   $source = sfMessageSource::factory('MySQLi', $dsn);
  *
  *   //set the culture and cache, store the cache in the /tmp directory.
  *   $source->setCulture('en_AU')l
@@ -101,7 +117,7 @@ abstract class sfMessageSource implements sfIMessageSource
   /**
    * Factory method to instantiate a new sfMessageSource depending on the
    * source type. The built-in source types are 'XLIFF', 'SQLite',
-   * 'MySQL', 'gettext', and 'Aggregate'.
+   * 'MySQL', 'MySQLi', 'gettext', and 'Aggregate'.
    * The source parameter is dependent on the source type.
    * For 'gettext' and 'XLIFF', it should point to the directory
    * where the messages are stored. For database types, e.g. 'SQLite' and
