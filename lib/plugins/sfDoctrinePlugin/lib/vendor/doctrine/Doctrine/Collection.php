@@ -355,8 +355,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function search(Doctrine_Record $record)
     {
-        return isset($this->oids[$record->oid()]);
-//        return array_search($record, $this->data, true);
+        //return isset($this->oids[$record->oid()]);
+        return array_search($record, $this->data, true);
     }
 
     /**
