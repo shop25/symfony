@@ -319,6 +319,7 @@ class sfCoreAutoload
     'sfmessagesource_file' => 'i18n/sfMessageSource_File.class.php',
     'sfmessagesource_mysql' => 'i18n/sfMessageSource_MySQL.class.php',
     'sfmessagesource_mysqli' => 'i18n/sfMessageSource_MySQLi.class.php',
+    'sfmessagesource_s25' => 'i18n/sfMessageSource_s25.class.php',
     'sfmessagesource_sqlite' => 'i18n/sfMessageSource_SQLite.class.php',
     'sfmessagesource_xliff' => 'i18n/sfMessageSource_XLIFF.class.php',
     'sfmessagesource_gettext' => 'i18n/sfMessageSource_gettext.class.php',
