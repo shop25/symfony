@@ -478,9 +478,9 @@ abstract class sfTestFunctionalBase
   /**
    * Exception handler for the current test browser instance.
    *
-   * @param Exception $exception The exception
+   * @param $exception The exception
    */
-  function handleException(Exception $exception)
+  function handleException($exception)
   {
     $this->test()->error(sprintf('%s: %s', get_class($exception), $exception->getMessage()));
 
