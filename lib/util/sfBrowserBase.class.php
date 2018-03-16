@@ -925,7 +925,8 @@ abstract class sfBrowserBase
     if (false !== $pos = strpos($name, '['))
     {
       $var = &$vars;
-      $tmps = array_filter(preg_split('/(\[ | \[\] | \])/x', $name), create_function('$s', 'return $s !== "";'));
+      $fn = function ($s) { return $s !== ""; };
+      $tmps = array_filter(preg_split('/(\[ | \[\] | \])/x', $name), $fn);
       foreach ($tmps as $tmp)
       {
         $var = &$var[$tmp];

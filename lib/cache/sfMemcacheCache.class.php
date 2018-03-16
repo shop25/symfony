@@ -203,8 +203,14 @@ class sfMemcacheCache extends sfCache
    */
   public function getMany($keys)
   {
+    $prefix = $this->getOption('prefix');
+    $fn     = function ($k) use ($prefix)
+    {
+      return sprintf('%s%s', $prefix, $k);
+    };
+
     $values = array();
-    foreach ($this->memcache->get(array_map(create_function('$k', 'return "'.$this->getOption('prefix').'".$k;'), $keys)) as $key => $value)
+    foreach ($this->memcache->get(array_map($fn, $keys)) as $key => $value)
     {
       $values[str_replace($this->getOption('prefix'), '', $key)] = $value;
     }

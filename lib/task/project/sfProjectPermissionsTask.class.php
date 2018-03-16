@@ -70,9 +70,10 @@ EOF;
     // note those files that failed
     if (count($this->failed))
     {
+      $fn = function ($f) { return ' - '.sfDebug::shortenFilePath($f); };
       $this->logBlock(array_merge(
         array('Permissions on the following file(s) could not be fixed:', ''),
-        array_map(create_function('$f', 'return \' - \'.sfDebug::shortenFilePath($f);'), $this->failed)
+        array_map($fn, $this->failed)
       ), 'ERROR_LARGE');
     }
   }

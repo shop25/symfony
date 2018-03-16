@@ -300,9 +300,11 @@ class sfValidatorErrorSchema extends sfValidatorError implements ArrayAccess, It
    */
   protected function updateCode()
   {
+    $fn      = function ($e) { return $e->getCode(); };
+    $fnNamed = function ($n, $e) { return $n.' ['.$e->getCode().']'; };
     $this->code = implode(' ', array_merge(
-      array_map(create_function('$e', 'return $e->getCode();'), $this->globalErrors),
-      array_map(create_function('$n,$e', 'return $n.\' [\'.$e->getCode().\']\';'), array_keys($this->namedErrors), array_values($this->namedErrors))
+      array_map($fn, $this->globalErrors),
+      array_map($fnNamed, array_keys($this->namedErrors), array_values($this->namedErrors))
     ));
   }
 
@@ -311,9 +313,12 @@ class sfValidatorErrorSchema extends sfValidatorError implements ArrayAccess, It
    */
   protected function updateMessage()
   {
+    $fn      = function ($e) { return $e->getMessage(); };
+    $fnNamed = function ($n, $e) { return $n.' ['.$e->getMessage().']'; };
+
     $this->message = implode(' ', array_merge(
-      array_map(create_function('$e', 'return $e->getMessage();'), $this->globalErrors),
-      array_map(create_function('$n,$e', 'return $n.\' [\'.$e->getMessage().\']\';'), array_keys($this->namedErrors), array_values($this->namedErrors))
+      array_map($fn, $this->globalErrors),
+      array_map($fnNamed, array_keys($this->namedErrors), array_values($this->namedErrors))
     ));
   }
 
