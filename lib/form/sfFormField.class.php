@@ -320,6 +320,6 @@ class sfFormField
    */
   public function hasError()
   {
-    return null !== $this->error && count($this->error);
+    return null !== $this->error && $this->error instanceof sfValidatorError;
   }
 }
