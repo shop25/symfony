@@ -105,14 +105,16 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
             } else {
                 $data = $stmt->fetch(Doctrine_Core::FETCH_ASSOC);
                 if ( ! $data) {
+                    $stmt->closeCursor();
                     return $result;
                 }
             }
             $activeRootIdentifier = null;
         } else { 
             $data = $stmt->fetch(Doctrine_Core::FETCH_ASSOC); 
-            if ( ! $data) { 
-                return $result; 
+            if ( ! $data) {
+                $stmt->closeCursor();
+                return $result;
             }
         }
 
@@ -133,7 +135,8 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
                     $activeRootIdentifier = $id[$rootAlias]; 
                 } else if ($activeRootIdentifier != $id[$rootAlias]) { 
                     // first row for the next record 
-                    $this->_priorRow = $data; 
+                    $this->_priorRow = $data;
+                    $stmt->closeCursor();
                     return $result; 
                 } 
             }
@@ -263,7 +266,7 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
                         $prev[$parent][$relationAlias] = $element;
                     }
                 }
-                if ($prev[$parent][$relationAlias] !== null) {
+                if ($prev[$parent][$relationAlias] !== null && !$prev[$parent][$relationAlias] instanceof Doctrine_Null) {
                     $coll =& $prev[$parent][$relationAlias];
                     $this->setLastElement($prev, $coll, $index, $dqlAlias, $oneToOne);
                 }
