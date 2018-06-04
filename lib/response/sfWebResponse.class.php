@@ -354,7 +354,14 @@ class sfWebResponse extends sfResponse
     }
     foreach ($this->headers as $name => $value)
     {
-      header($name.': '.$value);
+      // https://tools.ietf.org/html/rfc7540#section-8.1.2
+      //
+      // Just as in HTTP/1.x, header field names are strings of ASCII
+      // characters that are compared in a case-insensitive fashion. However,
+      // header field names MUST be converted to lowercase prior to their
+      // encoding in HTTP/2.  A request or response containing uppercase
+      //  header field names MUST be treated as malformed.
+      header(mb_strtolower($name, 'utf-8').': '.$value);
 
       if ($value != '' && $this->options['logging'])
       {
