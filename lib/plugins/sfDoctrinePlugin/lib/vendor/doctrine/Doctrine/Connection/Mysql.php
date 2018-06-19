@@ -119,10 +119,11 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * Set the charset on the current connection
      *
      * @param string    charset
+     * @param string    collation
      */
-    public function setCharset($charset)
+    public function setCharset($charset, $collation = 'unicode_ci')
     {
-        $query = 'SET NAMES ' . $this->quote($charset);
+        $query = sprintf('SET NAMES %1$s COLLATE %1$s_%2$s', $charset, $collation);
         $this->exec($query);
         parent::setCharset($charset);
     }
