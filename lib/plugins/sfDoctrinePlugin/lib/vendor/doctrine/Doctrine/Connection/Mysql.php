@@ -119,15 +119,25 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * Set the charset on the current connection
      *
      * @param string    charset
-     * @param string    collation
      */
-    public function setCharset($charset, $collation = 'unicode_ci')
+    public function setCharset($charset)
     {
-        $query = sprintf('SET NAMES %1$s COLLATE %1$s_%2$s', $charset, $collation);
+        $query = sprintf('SET NAMES %1$s', $charset) . $this->getCollation();
         $this->exec($query);
         parent::setCharset($charset);
     }
 
+    /**
+     * Get the collation for the configuration.
+     *
+     * @return string
+     */
+    public function getCollation()
+    {
+      $collate = $this->getManager()->getCollate();
+
+      return $collate === null ? '' : ' COLLATE ' . $collate;
+    }
     /**
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
      * query, except that if there is already a row in the table with the same
