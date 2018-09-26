@@ -1,23 +1,23 @@
 <?php
-  
-  /**
-   * Class sfMessageSource_s25
-   *
-   * Источник для работы с упрощенной схемой хранения.
-   * Поддерживает только один каталог messages.
-   * Методы для изменения каталога заглушены.
-   *
-   * Схема:
-   *
-   * I18nMessage:
-   *  actAs:
-   *    I18n:
-   *      appLevelDelete: true
-   *      fields: [target]
-   *  columns:
-   *    source:     { type: string, notnull: true }
-   *    target:     { type: string, notnull: true }
-   */
+
+/**
+ * Class sfMessageSource_s25
+ *
+ * Источник для работы с упрощенной схемой хранения.
+ * Поддерживает только один каталог messages.
+ * Методы для изменения каталога заглушены.
+ *
+ * Схема:
+ *
+ * I18nMessage:
+ *  actAs:
+ *    I18n:
+ *      appLevelDelete: true
+ *      fields: [target]
+ *  columns:
+ *    source:     { type: string, notnull: true }
+ *    target:     { type: string, notnull: true }
+ */
 class sfMessageSource_s25 extends sfMessageSource_Database
 {
   /**
@@ -42,14 +42,15 @@ class sfMessageSource_s25 extends sfMessageSource_Database
    * Constructor.
    * Creates a new message source using MySQL.
    *
-   * @param string $source  MySQL datasource, in PEAR's DB DSN format.
+   * @param string $source MySQL datasource, in PEAR's DB DSN format.
+   *
    * @see MessageSource::factory();
    */
   function __construct($source)
   {
-    $this->source = (string) $source;
-    $this->dsn = $this->parseDSN($this->source);
-    $this->db = $this->connect();
+    $this->source = (string)$source;
+    $this->dsn    = $this->parseDSN($this->source);
+    $this->db     = $this->connect();
   }
 
   /**
@@ -83,9 +84,11 @@ class sfMessageSource_s25 extends sfMessageSource_Database
       }
     }
     $user = $dsninfo['username'];
-    $pw = $dsninfo['password'];
+    $pw   = $dsninfo['password'];
 
     $connect_function = 'mysqli_connect';
+    $charset_function = 'mysqli_set_charset';
+    $query_function   = 'mysqli_query';
 
     if (!function_exists($connect_function))
     {
@@ -126,6 +129,11 @@ class sfMessageSource_s25 extends sfMessageSource_Database
       throw new sfException('Please provide a database for message translation.');
     }
 
+    $charset = isset($dsninfo['charset']) ? $dsninfo['charset'] : 'utf8mb4';
+
+    @$charset_function($conn, $charset);
+    @$query_function($conn, "SET NAMES $charset COLLATE {$charset}_unicode_ci");
+
     return $conn;
   }
 
@@ -143,12 +151,13 @@ class sfMessageSource_s25 extends sfMessageSource_Database
    * Gets an array of messages for a particular catalogue and cultural variant.
    *
    * @param string $variant the catalogue name + variant
+   *
    * @return array translation messages.
    */
   public function &loadData($variant)
   {
     $variant = mb_substr(mysqli_real_escape_string($this->db, $variant), -2);
-  
+
     $statement =
       "SELECT t.id, s.source, t.target, '' comments
         FROM i18n_message_translation t
@@ -167,7 +176,7 @@ class sfMessageSource_s25 extends sfMessageSource_Database
 
     while ($row = mysqli_fetch_array($rs, MYSQLI_NUM))
     {
-      $source = $row[1];
+      $source            = $row[1];
       $result[$source][] = $row[2]; //target
       $result[$source][] = $row[0]; //id
       $result[$source][] = $row[3]; //comments
@@ -181,14 +190,15 @@ class sfMessageSource_s25 extends sfMessageSource_Database
    * Checks if a particular catalogue+variant exists in the database.
    *
    * @param string $variant catalogue+variant
+   *
    * @return boolean true if the catalogue+variant is in the database, false otherwise.
    */
   public function isValidSource($variant)
   {
     $variant = mb_substr(mysqli_real_escape_string($this->db, $variant), -2);
-  
+
     $rs = mysqli_query($this->db, "SELECT count(shit) FROM (SELECT DISTINCT '' shit FROM i18n_message_translation t WHERE t.lang = '{$variant}') d");
-  
+
     $row = mysqli_fetch_array($rs, MYSQLI_NUM);
 
     $result = $row && $row[0] == '1';
@@ -200,6 +210,7 @@ class sfMessageSource_s25 extends sfMessageSource_Database
    * Заглушка
    *
    * @param string $catalogue the catalogue to add to
+   *
    * @return boolean true if saved successfuly, false otherwise.
    */
   function save($catalogue = 'messages')
@@ -212,6 +223,7 @@ class sfMessageSource_s25 extends sfMessageSource_Database
    *
    * @param string $message   the source message to delete.
    * @param string $catalogue the catalogue to delete from.
+   *
    * @return boolean true if deleted, false otherwise.
    */
   function delete($message, $catalogue = 'messages')
@@ -226,6 +238,7 @@ class sfMessageSource_s25 extends sfMessageSource_Database
    * @param string $target    the new translation string.
    * @param string $comments  comments
    * @param string $catalogue the catalogue of the translation.
+   *
    * @return boolean true if translation was updated, false otherwise.
    */
   function update($text, $target, $comments, $catalogue = 'messages')
@@ -241,9 +254,9 @@ class sfMessageSource_s25 extends sfMessageSource_Database
   function catalogues()
   {
     $statement = "SELECT DISTINCT concat('messages.', lang) FROM i18n_message_translation ORDER BY lang";
-    $rs = mysqli_query($this->db, $statement);
-    $result = array();
-    while($row = mysqli_fetch_array($rs, MYSQLI_NUM))
+    $rs        = mysqli_query($this->db, $statement);
+    $result    = array();
+    while ($row = mysqli_fetch_array($rs, MYSQLI_NUM))
     {
       $details = explode('.', $row[0]);
       if (!isset($details[1]))
