@@ -46,7 +46,7 @@ class Doctrine_Validator_Unsigned extends Doctrine_Validator_Driver
         if (is_null($value) || $value == '') {
             return true;
         }
-        if (!is_numeric($value)) {
+        if (preg_match('/[^0-9\-\.]/', $value)) {
             return false;
         }
 

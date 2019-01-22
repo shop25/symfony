@@ -120,7 +120,6 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
         if (!isset($offset)) {
             return $this->get(null);
         }
-
         return $this->get($offset);
     }
 

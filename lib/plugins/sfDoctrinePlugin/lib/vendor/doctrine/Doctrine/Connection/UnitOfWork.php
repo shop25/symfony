@@ -113,7 +113,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                     }
                     $record->resetPendingUnlinks();
 
-//                    $record->invokeSaveHooks('post', 'save', $event);
+                    $record->invokeSaveHooks('post', 'save', $event);
                 } else {
                     $conn->transaction->addInvalid($record);
                 }
@@ -144,11 +144,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
 
             $record->state($state);
-
-            // invoke-postsave-later.patch @ Github user: Lenar
-            if ($isValid) {
-                $record->invokeSaveHooks('post', 'save', $event);
-            }
 
             $conn->commit();
         } catch (Exception $e) {
