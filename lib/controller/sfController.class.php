@@ -116,7 +116,12 @@ abstract class sfController
         return true;
       }
 
-      $module_file = $dir.'/'.$classFile.'s.class.php';
+      $module_file = $dir.'/'.$moduleName.ucfirst($classFile).'s.class.php';
+      if (!is_readable($module_file))
+      {
+        $module_file = $dir.'/'.$classFile.'s.class.php';
+      }
+
       if (is_readable($module_file))
       {
         // module class exists
