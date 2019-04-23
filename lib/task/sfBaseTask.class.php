@@ -20,6 +20,7 @@ abstract class sfBaseTask extends sfCommandApplicationTask
 {
   protected
     $configuration = null,
+    $commandManager = null,
     $pluginManager = null;
 
   /**
@@ -29,6 +30,8 @@ abstract class sfBaseTask extends sfCommandApplicationTask
   {
     $event = $this->dispatcher->filter(new sfEvent($this, 'command.filter_options', array('command_manager' => $commandManager)), $options);
     $options = $event->getReturnValue();
+
+    $this->commandManager = $commandManager;
 
     $this->process($commandManager, $options);
 
@@ -70,6 +73,31 @@ abstract class sfBaseTask extends sfCommandApplicationTask
     $this->dispatcher->notify(new sfEvent($this, 'command.post_command'));
 
     return $ret;
+  }
+
+  /**
+   * @return sfCommandManager
+   */
+  protected function getCommandManager(): sfCommandManager
+  {
+    return $this->commandManager;
+  }
+
+  protected function getOptionValues()
+  {
+    return $this->getCommandManager()->getOptionValues();
+  }
+
+  protected function getOptionValue($name, $default = null)
+  {
+    return $this->getCommandManager()->getOptionSet()->hasOption($name)
+      ? $this->getCommandManager()->getOptionValue($name)
+      : $default;
+  }
+
+  protected function getArgumentValues()
+  {
+    return $this->getCommandManager()->getOptionValues();
   }
 
   /**
