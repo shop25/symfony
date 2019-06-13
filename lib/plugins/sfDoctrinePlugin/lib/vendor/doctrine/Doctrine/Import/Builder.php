@@ -832,7 +832,7 @@ class Doctrine_Import_Builder extends Doctrine_Builder
 
             foreach ($getters as $getterItem)
             {
-                $methodName = sprintf("get%s()",ucfirst($getterItem[1]));
+                $methodName = sprintf('get%s(bool $load = true)', ucfirst($getterItem[1]));
                 $type = in_array($getterItem[0], $stringTypeCasting, true) ? 'string' : $getterItem[0];
 
                 $ret[] = sprintf("@method %s %s %s", str_pad($type, $maxTypeSize+2, " "), str_pad(($methodName), $maxNameSize, " "), $getterItem[2]);
