@@ -43,15 +43,14 @@ class sfDeprecatedClassesValidation extends sfValidation
     $classes = array(
       'sfDoctrineLogger', 'sfNoRouting', 'sfPathInfoRouting', 'sfRichTextEditor',
       'sfRichTextEditorFCK', 'sfRichTextEditorTinyMCE', 'sfCrudGenerator', 'sfAdminGenerator',
-      'sfPropelCrudGenerator', 'sfPropelAdminGenerator', 'sfPropelUniqueValidator', 'sfDoctrineUniqueValidator',
+      'sfDoctrineUniqueValidator',
       'sfLoader', 'sfConsoleRequest', 'sfConsoleResponse', 'sfConsoleController',
-      'sfDoctrineDataRetriever', 'sfPropelDataRetriever',
+      'sfDoctrineDataRetriever',
       'sfWidgetFormI18nSelectLanguage', 'sfWidgetFormI18nSelectCurrency', 'sfWidgetFormI18nSelectCountry',
-      'sfWidgetFormChoiceMany', 'sfWidgetFormPropelChoiceMany', 'sfWidgetFormDoctrineChoiceMany',
-      'sfValidatorChoiceMany', 'sfValidatorPropelChoiceMany', 'sfValidatorPropelDoctrineMany',
+      'sfWidgetFormChoiceMany', 'sfWidgetFormDoctrineChoiceMany',
+      'sfValidatorChoiceMany',
       'SfExtensionObjectBuilder', 'SfExtensionPeerBuilder', 'SfMultiExtendObjectBuilder',
       'SfNestedSetBuilder', 'SfNestedSetPeerBuilder', 'SfObjectBuilder', 'SfPeerBuilder',
-      'sfWidgetFormPropelSelect', 'sfWidgetFormPropelSelectMany',
       'sfWidgetFormDoctrineSelect', 'sfWidgetFormDoctrineSelectMany',
 
       // classes from sfCompat10Plugin
