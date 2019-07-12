@@ -581,7 +581,7 @@ class sfRoute implements Serializable
         throw new InvalidArgumentException(sprintf('Unable to parse "%s" route near "%s".', $this->pattern, $buffer));
       }
     }
-    
+
     // check for suffix
     if ($this->suffix)
     {
@@ -700,10 +700,8 @@ class sfRoute implements Serializable
     {
       $this->options['segment_separators_regex'] = '(?:'.implode('|', array_map($preg_quote_hash, $this->options['segment_separators'])).')';
 
-      // as of PHP 5.3.0, preg_quote automatically quotes dashes "-" (see http://bugs.php.net/bug.php?id=47229)
-      $preg_quote_hash_53 = function ($a) { return str_replace('-', '\-', preg_quote($a, '#')); };
       $this->options['variable_content_regex'] = '[^'.implode('',
-          array_map(version_compare(PHP_VERSION, '5.3.0RC4', '>=') ? $preg_quote_hash : $preg_quote_hash_53, $this->options['segment_separators'])
+          array_map($preg_quote_hash, $this->options['segment_separators'])
         ).']+';
     }
     else
