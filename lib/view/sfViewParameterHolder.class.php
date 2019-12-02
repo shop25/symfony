@@ -179,7 +179,7 @@ class sfViewParameterHolder extends sfParameterHolder
    */
   public function unserialize($serialized)
   {
-    list($this->parameters, $escapingMethod, $escaping) = unserialize($serialized);
+    list($this->parameters, $escapingMethod, $escaping) = unserialize($serialized, array('allowed_classes' => true));
 
     $this->initialize(sfContext::hasInstance() ? sfContext::getInstance()->getEventDispatcher() : new sfEventDispatcher());
 

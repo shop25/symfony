@@ -2151,7 +2151,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $results = $this->getConnection()->fetchAll($q, $params);
                 $cacheDriver->save($hash, serialize($results), $this->getResultCacheLifeSpan());
             } else {
-                $results = unserialize($cached);
+                $results = unserialize($cached, array('allowed_classes' => true));
             }
         } else {
             $results = $this->getConnection()->fetchAll($q, $params);

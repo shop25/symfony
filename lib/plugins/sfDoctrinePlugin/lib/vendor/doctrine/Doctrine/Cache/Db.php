@@ -89,7 +89,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver
             return false;
         }
 
-        return unserialize($this->_hex2bin($result[0][0]));
+        return unserialize($this->_hex2bin($result[0][0]), array('allowed_classes' => true));
     }
 
     /**

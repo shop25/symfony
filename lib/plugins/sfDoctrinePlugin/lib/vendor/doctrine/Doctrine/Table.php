@@ -2371,7 +2371,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable, Seriali
                 case 'array':
                 case 'object':
                     if (is_string($value)) {
-                        $value = empty($value) ? null:unserialize($value);
+                        $value = empty($value) ? null:unserialize($value, array('allowed_classes' => true));
 
                         if ($value === false) {
                             throw new Doctrine_Table_Exception('Unserialization of ' . $fieldName . ' failed.');
@@ -2996,7 +2996,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable, Seriali
 
     public function unserialize($data)
     {
-        $all = unserialize($data);
+        $all = unserialize($data, array('allowed_classes' => false));
 
         $this->_identifier = $all[0];
         $this->_identifierType = $all[1];

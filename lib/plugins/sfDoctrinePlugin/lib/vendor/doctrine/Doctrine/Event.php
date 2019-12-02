@@ -235,6 +235,15 @@ class Doctrine_Event
     }
 
     /**
+     * @param $option
+     * @return bool
+     */
+    public function __isset($option)
+    {
+        return isset($this->_options[$option]);
+    }
+
+    /**
      * skipOperation
      * skips the next operation
      * an alias for __set('skipOperation', true)

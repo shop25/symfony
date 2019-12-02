@@ -147,7 +147,7 @@ class sfSimpleAutoload
       return;
     }
 
-    list($this->classes, $this->dirs, $this->files) = unserialize(file_get_contents($this->cacheFile));
+    list($this->classes, $this->dirs, $this->files) = unserialize(file_get_contents($this->cacheFile), array('allowed_classes' => true));
 
     $this->cacheLoaded = true;
     $this->cacheChanged = false;
@@ -326,7 +326,7 @@ class sfSimpleAutoload
    * Loads configuration from the supplied files.
    *
    * @param array $files An array of autoload.yml files
-   * 
+   *
    * @see sfAutoloadConfigHandler
    */
   public function loadConfiguration(array $files)

@@ -222,7 +222,7 @@ class Doctrine_Data_Import extends Doctrine_Data
                 $obj->$func($value);
             } else if ($obj->getTable()->hasField($key)) {
                 if ($obj->getTable()->getTypeOf($key) == 'object') {
-                    $value = unserialize($value);
+                    $value = unserialize($value, array('allowed_classes' => true));
                 }
                 $obj->set($key, $value);
             } else if ($obj->getTable()->hasRelation($key)) {

@@ -164,6 +164,6 @@ abstract class sfResponse implements Serializable
    */
   public function unserialize($serialized)
   {
-    $this->content = unserialize($serialized);
+    $this->content = unserialize($serialized, array('allowed_classes' => true));
   }
 }

@@ -572,7 +572,9 @@ class sfFinder
 
     foreach ($this->execs as $exec)
     {
-      if (!call_user_func_array($exec, array($dir, $entry))) return false;
+      if (!call_user_func($exec, $dir, $entry)) {
+        return false;
+      }
     }
 
     return true;
@@ -580,10 +582,10 @@ class sfFinder
 
   public static function isPathAbsolute($path)
   {
-    if ($path{0} === '/' || $path{0} === '\\' ||
-        (strlen($path) > 3 && ctype_alpha($path{0}) &&
-         $path{1} === ':' &&
-         ($path{2} === '\\' || $path{2} === '/')
+    if ($path[0] === '/' || $path[0] === '\\' ||
+        (strlen($path) > 3 && ctype_alpha($path[0]) &&
+         $path[1] === ':' &&
+         ($path[2] === '\\' || $path[2] === '/')
         )
        )
     {

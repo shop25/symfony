@@ -52,7 +52,7 @@ class sfSessionTestStorage extends sfStorage
     {
       // we read session data from temp file
       $file = $this->options['session_path'].DIRECTORY_SEPARATOR.$this->sessionId.'.session';
-      $this->sessionData = file_exists($file) ? unserialize(file_get_contents($file)) : array();
+      $this->sessionData = file_exists($file) ? unserialize(file_get_contents($file), array('allowed_classes' => true)) : array();
     }
     else
     {

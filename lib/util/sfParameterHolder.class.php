@@ -195,6 +195,6 @@ class sfParameterHolder implements Serializable
    */
   public function unserialize($serialized)
   {
-    $this->parameters = unserialize($serialized);
+    $this->parameters = unserialize($serialized, array('allowed_classes' => true));
   }
 }

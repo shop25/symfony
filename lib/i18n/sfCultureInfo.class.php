@@ -332,7 +332,7 @@ class sfCultureInfo
 
     if (!in_array($filename, $files))
     {
-      $data[$filename] = unserialize(file_get_contents($filename));
+      $data[$filename] = unserialize(file_get_contents($filename), array('allowed_classes' => true));
       $files[] = $filename;
     }
 

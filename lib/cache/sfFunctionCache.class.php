@@ -53,7 +53,7 @@ class sfFunctionCache
     $serialized = $this->cache->get($key);
     if ($serialized !== null)
     {
-      $data = unserialize($serialized);
+      $data = unserialize($serialized, array('allowed_classes' => true));
     }
     else
     {

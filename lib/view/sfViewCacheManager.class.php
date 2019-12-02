@@ -816,7 +816,7 @@ class sfViewCacheManager
       return null;
     }
 
-    $cache = unserialize($cache);
+    $cache = unserialize($cache, array('allowed_classes' => true));
     $content = $cache['content'];
     $this->context->getResponse()->merge($cache['response']);
 
@@ -890,7 +890,7 @@ class sfViewCacheManager
       return null;
     }
 
-    $cache = unserialize($cache);
+    $cache = unserialize($cache, array('allowed_classes' => true));
     $content = $cache['content'];
     $cache['response']->setEventDispatcher($this->dispatcher);
     $this->context->getResponse()->copyProperties($cache['response']);
@@ -968,7 +968,7 @@ class sfViewCacheManager
       return false;
     }
 
-    $cachedResponse = unserialize($retval);
+    $cachedResponse = unserialize($retval, array('allowed_classes' => true));
     $cachedResponse->setEventDispatcher($this->dispatcher);
 
     if (sfView::RENDER_VAR == $this->controller->getRenderMode())

@@ -431,6 +431,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
 
     /**
+     * PHP-7 bfx
+     *
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->properties[$name]) || isset($this->modules[$name]);
+    }
+
+    /**
      * returns the manager that created this connection
      *
      * @return Doctrine_Manager
@@ -1131,7 +1142,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $cached = $tableCacheDriver->fetch($hash);
 
             if ($cached) {
-                $table = unserialize($cached);
+                $table = unserialize($cached, array('allowed_classes' => true));
                 $table->initializeFromCache($this);
 
                 return $this->tables[$name] = $table;
@@ -1627,7 +1638,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function unserialize($serialized)
     {
-        $array = unserialize($serialized);
+        $array = unserialize($serialized, array('allowed_classes' => false));
 
         foreach ($array as $name => $values) {
             $this->$name = $values;

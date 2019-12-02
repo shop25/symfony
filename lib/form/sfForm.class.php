@@ -154,7 +154,7 @@ class sfForm implements ArrayAccess, Iterator, Countable
    * @param boolean $recursive False will prevent hidden fields from embedded forms from rendering
    *
    * @return string
-   * 
+   *
    * @see sfFormFieldSchema
    */
   public function renderHiddenFields($recursive = true)
@@ -465,7 +465,7 @@ class sfForm implements ArrayAccess, Iterator, Countable
    * @param  string $name The name used to embed the form
    *
    * @return sfForm
-   * 
+   *
    * @throws InvalidArgumentException If there is no form embedded with the supplied name
    */
   public function getEmbeddedForm($name)
@@ -910,7 +910,7 @@ class sfForm implements ArrayAccess, Iterator, Countable
    */
   public function isCSRFProtected()
   {
-    return null !== $this->validatorSchema[self::$CSRFFieldName];
+    return null !== $this->validatorSchema && null !== $this->validatorSchema[self::$CSRFFieldName];
   }
 
   /**

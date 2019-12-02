@@ -151,6 +151,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         $vars = get_object_vars($this);
 
+        unset($vars['_snapshot']);
         unset($vars['reference']);
         unset($vars['referenceField']);
         unset($vars['relation']);
@@ -173,7 +174,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $manager    = Doctrine_Manager::getInstance();
         $connection    = $manager->getCurrentConnection();
 
-        $array = unserialize($serialized);
+        $array = unserialize($serialized, array('allowed_classes' => true));
 
         foreach ($array as $name => $values) {
             $this->$name = $values;
