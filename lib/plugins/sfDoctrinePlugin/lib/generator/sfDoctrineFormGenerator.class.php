@@ -78,7 +78,9 @@ class sfDoctrineFormGenerator extends sfGenerator
     {
       if (!is_dir($directory = dirname($file)))
       {
-        mkdir($directory, 0777, true);
+        if (!mkdir($directory, 0777, true) && !is_dir($directory)) {
+          throw new \RuntimeException(sprintf('Directory "%s" was not created', $directory));
+        }
       }
 
       file_put_contents($file, $this->evalTemplate('sfDoctrineFormBaseTemplate.php'));
@@ -103,7 +105,9 @@ class sfDoctrineFormGenerator extends sfGenerator
 
       if (!is_dir($baseDir.'/base'))
       {
-        mkdir($baseDir.'/base', 0777, true);
+        if (!mkdir($concurrentDirectory = $baseDir . '/base', 0777, true) && !is_dir($concurrentDirectory)) {
+          throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
       }
 
       file_put_contents($baseDir.'/base/Base'.$model.'Form.class.php', $this->evalTemplate(null === $this->getParentModel() ? 'sfDoctrineFormGeneratedTemplate.php' : 'sfDoctrineFormGeneratedInheritanceTemplate.php'));
@@ -115,7 +119,9 @@ class sfDoctrineFormGenerator extends sfGenerator
         {
             if (!is_dir($pluginBaseDir))
             {
-              mkdir($pluginBaseDir, 0777, true);
+              if (!mkdir($pluginBaseDir, 0777, true) && !is_dir($pluginBaseDir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $pluginBaseDir));
+              }
             }
             file_put_contents($classFile, $this->evalTemplate('sfDoctrineFormPluginTemplate.php'));
         }

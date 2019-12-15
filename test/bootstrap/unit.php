@@ -30,7 +30,9 @@ sf_unit_test_shutdown();
 
 // create test cache dir
 $sf_root_dir = sys_get_temp_dir().'/sf_test_project';
-@mkdir($sf_root_dir, 0777, true);
+if (!mkdir($sf_root_dir, 0777, true) && !is_dir($sf_root_dir)) {
+  throw new \RuntimeException(sprintf('Directory "%s" was not created', $sf_root_dir));
+}
 
 register_shutdown_function('sf_unit_test_shutdown');
 

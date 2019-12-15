@@ -3,7 +3,7 @@
 /*
  * This file is part of the symfony package.
  * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -66,7 +66,9 @@ class sfFileLogger extends sfLogger
     $dir = dirname($options['file']);
     if (!is_dir($dir))
     {
-      mkdir($dir, isset($options['dir_mode']) ? $options['dir_mode'] : 0777, true);
+      if (!mkdir($dir, isset($options['dir_mode']) ? $options['dir_mode'] : 0777, true) && !is_dir($dir)) {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+      }
     }
 
     $fileExists = file_exists($options['file']);

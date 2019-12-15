@@ -134,7 +134,7 @@ class sfConfigCache
    *
    * The recompilation only occurs in a non debug environment.
    *
-   * If the configuration file path is relative, symfony will look in directories 
+   * If the configuration file path is relative, symfony will look in directories
    * defined in the sfConfiguration::getConfigPaths() method.
    *
    * @param string  $configPath A filesystem path to a configuration file
@@ -335,7 +335,7 @@ class sfConfigCache
     $current_umask = umask(0000);
     if (!is_dir(dirname($cache)))
     {
-      if (false === @mkdir(dirname($cache), 0777, true))
+      if (!mkdir($concurrentDirectory = dirname($cache), 0777, true) && !is_dir($concurrentDirectory))
       {
         throw new sfCacheException(sprintf('Failed to make cache directory "%s" while generating cache for configuration file "%s".', dirname($cache), $config));
       }
@@ -379,7 +379,7 @@ class sfConfigCache
   }
 
   /**
-   * Merges configuration handlers from the config_handlers.yml  
+   * Merges configuration handlers from the config_handlers.yml
    * and the ones defined with registerConfigHandler()
    *
    */

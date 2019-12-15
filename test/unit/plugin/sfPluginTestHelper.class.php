@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class sfPluginTestHelper
 {
@@ -13,7 +13,9 @@ class sfPluginTestHelper
 
     if (!is_dir(dirname($dest)))
     {
-      mkdir(dirname($dest), 0777, true);
+      if (!mkdir($concurrentDirectory = dirname($dest), 0777, true) && !is_dir($concurrentDirectory)) {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+      }
     }
 
     if (!file_exists(dirname(__FILE__).'/fixtures/'.$dir.'/'.$file))

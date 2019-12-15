@@ -87,7 +87,9 @@ class Doctrine_Migration_Diff
     public function setTmpPath($tmpPath)
     {
         if ( ! is_dir($tmpPath)) {
-            mkdir($tmpPath, 0777, true);
+          if (!mkdir($tmpPath, 0777, true) && !is_dir($tmpPath)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $tmpPath));
+          }
         }
         $this->_tmpPath = $tmpPath;
     }

@@ -160,7 +160,9 @@ class sfSessionTestStorage extends sfStorage
       $current_umask = umask(0000);
       if (!is_dir($this->options['session_path']))
       {
-        mkdir($this->options['session_path'], 0777, true);
+        if (!mkdir($concurrentDirectory = $this->options['session_path'], 0777, true) && !is_dir($concurrentDirectory)) {
+          throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
       }
       umask($current_umask);
       file_put_contents($this->options['session_path'].DIRECTORY_SEPARATOR.$this->sessionId.'.session', serialize($this->sessionData));

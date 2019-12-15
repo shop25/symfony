@@ -156,7 +156,9 @@ class sfSQLiteCache extends sfCache
       $current_umask = umask(0000);
       if (!is_dir($dir))
       {
-        @mkdir($dir, 0777, true);
+        if (!mkdir($dir, 0777, true) && !is_dir($dir)) {
+          throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+        }
       }
 
       touch($database);

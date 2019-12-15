@@ -279,7 +279,9 @@ class sfFileCache extends sfCache
     if (!is_dir(dirname($path)))
     {
       // create directory structure if needed
-      mkdir(dirname($path), 0777, true);
+      if (!mkdir($concurrentDirectory = dirname($path), 0777, true) && !is_dir($concurrentDirectory)) {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+      }
     }
 
     $tmpFile = tempnam(dirname($path), basename($path));
@@ -328,7 +330,9 @@ class sfFileCache extends sfCache
     if (!is_dir($cache_dir))
     {
       $current_umask = umask(0000);
-      @mkdir($cache_dir, 0777, true);
+      if (!mkdir($cache_dir, 0777, true) && !is_dir($cache_dir)) {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $cache_dir));
+      }
       umask($current_umask);
     }
   }

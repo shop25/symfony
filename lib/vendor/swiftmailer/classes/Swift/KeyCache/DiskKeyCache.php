@@ -23,7 +23,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
 
   /** Signal to place pointer at end of file */
   const POSITION_END = 1;
-  
+
   /** Signal to leave pointer in whatever position it currently is */
   const POSITION_CURRENT = 2;
 
@@ -274,7 +274,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     $cacheDir = $this->_path . '/' . $nsKey;
     if (!is_dir($cacheDir))
     {
-      if (!mkdir($cacheDir))
+      if (!mkdir($cacheDir) && !is_dir($cacheDir))
       {
         throw new Swift_IoException('Failed to create cache directory ' . $cacheDir);
       }
@@ -311,7 +311,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     }
     return $this->_keys[$nsKey][$itemKey];
   }
-  
+
   private function _freeHandle($nsKey, $itemKey)
   {
     $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_CURRENT);

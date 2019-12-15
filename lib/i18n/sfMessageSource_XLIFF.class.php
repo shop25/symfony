@@ -51,7 +51,7 @@ class sfMessageSource_XLIFF extends sfMessageSource_File
   public function &loadData($filename)
   {
     libxml_use_internal_errors(true);
-    if (!$xml = simplexml_load_file($filename))
+    if (!$xml = simplexml_load_string(file_get_contents($filename)))
     {
       $error = false;
 
@@ -412,7 +412,9 @@ class sfMessageSource_XLIFF extends sfMessageSource_File
     $dir = dirname($file);
     if (!is_dir($dir))
     {
-      @mkdir($dir);
+      if (!mkdir($dir) && !is_dir($dir)) {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+      }
       @chmod($dir, 0777);
     }
 
