@@ -866,7 +866,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->preUnserialize($event);
         $this->getTable()->getRecordListener()->preUnserialize($event);
 
-        $array = unserialize($serialized, array('allowed_classes' => false));
+        $array = unserialize($serialized, array('allowed_classes' => true));
 
         foreach($array as $k => $v) {
             $this->$k = $v;
