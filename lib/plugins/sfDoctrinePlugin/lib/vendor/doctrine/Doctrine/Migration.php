@@ -316,7 +316,10 @@ class Doctrine_Migration
 
         $this->_createMigrationTable();
 
-        $this->_connection->beginTransaction();
+        // В MySql любые DDL запросы вызывают неявный commit транзакции.
+        // В PHP 8.0 это поведение реализовано в PDO(раньше транзакции не коммитились).
+        // Это приводит к исключению в методе PDO::commit
+//        $this->_connection->beginTransaction();
 
         try {
             // If nothing specified then lets assume we are migrating from
@@ -340,14 +343,14 @@ class Doctrine_Migration
             }
         } else {
             if ($dryRun) {
-                $this->_connection->rollback();
+//                $this->_connection->rollback();
                 if ($this->hasErrors()) {
                     return false;
                 } else {
                     return $to;
                 }
             } else {
-                $this->_connection->commit();
+//                $this->_connection->commit();
                 $this->setCurrentVersion($to);
                 return $to;
             }
