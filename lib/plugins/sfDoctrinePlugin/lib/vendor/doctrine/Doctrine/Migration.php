@@ -319,7 +319,9 @@ class Doctrine_Migration
         // В MySql любые DDL запросы вызывают неявный commit транзакции.
         // В PHP 8.0 это поведение реализовано в PDO(раньше транзакции не коммитились).
         // Это приводит к исключению в методе PDO::commit
-//        $this->_connection->beginTransaction();
+        if (PHP_VERSION_ID < 80000) {
+            $this->_connection->beginTransaction();
+        }
 
         try {
             // If nothing specified then lets assume we are migrating from
@@ -343,14 +345,18 @@ class Doctrine_Migration
             }
         } else {
             if ($dryRun) {
-//                $this->_connection->rollback();
+                if (PHP_VERSION_ID < 80000) {                
+                    $this->_connection->rollback();
+                }
                 if ($this->hasErrors()) {
                     return false;
                 } else {
                     return $to;
                 }
             } else {
-//                $this->_connection->commit();
+                if (PHP_VERSION_ID < 80000) {
+                    $this->_connection->commit();
+                }
                 $this->setCurrentVersion($to);
                 return $to;
             }
