@@ -1,3 +1,22 @@
+ADDITIONAL INFORMATION
+----------------------
+
+S25 team needs to support Symfony 1.4 for legacy projects so
+we've added a support PHP 7.4 and PHP 8.0 to Symfony 1.4 framework.
+
+System requirements
+-------------------
+
+1. PHP 7.4 or PHP 8.0
+
+Support's here
+--------------
+
+https://github.com/shop25/symfony
+
+Old Description
+---------------
+
 Symfony is a complete framework designed to optimize the development of web applications by way of several key features.
 For starters, it separates a web application's business rules, server logic, and presentation views.
 It contains numerous tools and classes aimed at shortening the development time of a complex web application.
@@ -18,7 +37,3 @@ INSTALLATION
 ------------
 
 see http://www.symfony-project.org/getting-started/1_4/en/
-
-LIFE AFTER 1.4.20
------------------
-Most patches comes from https://github.com/Virtuvia/symfony1
