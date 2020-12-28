@@ -4,5 +4,8 @@
     "license": "MIT",
     "require": {
         "php": ">=7.4"
+    },
+    "autoload": {
+        "classmap": ["lib/autoload/sfCoreAutoload.class.php"]
     }
 }
