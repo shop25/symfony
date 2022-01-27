@@ -485,8 +485,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if (extension_loaded('pdo')) {
             if (in_array($e[0], self::getAvailableDrivers())) {
                 try {
+                    $options = $this->options['other'];
+                    if (isset($_ENV['MYSQL_SSL_CA'])) {
+                        $options[PDO::MYSQL_ATTR_SSL_CA] = $_ENV['MYSQL_SSL_CA'];
+//                        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+                    }
                     $this->dbh = new PDO($this->options['dsn'], $this->options['username'],
-                                     (!$this->options['password'] ? '':$this->options['password']), $this->options['other']);
+                        (!$this->options['password'] ? '':$this->options['password']), $options);
 
                     $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 } catch (PDOException $e) {
